@@ -16,6 +16,8 @@
   "dependencies": {
     "cordova-android": "^8.1.0",
     "cordova-browser": "^6.0.0",
+    "cordova-plugin-file": "^6.0.2",
+    "cordova-plugin-geolocation": "^4.0.2",
     "cordova-windows": "^7.0.1",
     "gitignore": "^0.6.0"
   },
@@ -24,12 +26,14 @@
   },
   "cordova": {
     "plugins": {
-      "cordova-plugin-whitelist": {}
+      "cordova-plugin-whitelist": {},
+      "cordova-plugin-file": {},
+      "cordova-plugin-geolocation": {}
     },
     "platforms": [
       "browser",
-      "android",
-      "windows"
+      "windows",
+      "android"
     ]
   }
 }

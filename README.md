@@ -5,3 +5,4 @@
   * `cordova platform add browser`
   * `cordova platform add android`
 4. Check requirements and install if not available: `cordova requirements`
+5. Udate submodules: git submodule update --init --recursive

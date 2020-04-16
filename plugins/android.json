@@ -8,7 +8,13 @@
   },
   "installed_plugins": {
     "cordova-plugin-whitelist": {
-      "PACKAGE_NAME": "io.cordova.hellocordova"
+      "PACKAGE_NAME": "de.cirspecte"
+    },
+    "cordova-plugin-file": {
+      "PACKAGE_NAME": "de.cirspecte"
+    },
+    "cordova-plugin-geolocation": {
+      "PACKAGE_NAME": "de.cirspecte"
     }
   },
   "dependent_plugins": {}
