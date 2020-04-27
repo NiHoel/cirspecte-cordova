@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget xmlns:android="http://schemas.android.com/apk/res/android" id="de.cirspecte" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="de.cirspecte" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>Cirspecte</name>
     <description>
         Cirspecte - An editing software for panorama tours through time
@@ -8,19 +8,21 @@
         Nico Höllerich
     </author>
     <content src="edit.html" />
-	<preference name="fullscreen" value="true" />
-    <plugin name="cordova-plugin-whitelist" spec="~4.0.1" />
-	<plugin name="cordova-plugin-geolocation" spec="~4.0.2" />
-	<plugin name="cordova-plugin-whitelist" spec="1" />
+    <preference name="fullscreen" value="true" />
     <access origin="*" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
     <allow-intent href="geo:*" />
     <platform name="android">
         <allow-intent href="market:*" />
+		<preference name="android-minSdkVersion" value="19" />
+		<preference name="android-targetSdkVersion" value="23" />
     </platform>
     <platform name="ios">
         <allow-intent href="itms:*" />
         <allow-intent href="itms-apps:*" />
     </platform>
+	<platform name="windows">
+		<preference name="windows-target-version" value="10.0" />
+	</platform>
 </widget>

@@ -7,13 +7,16 @@
     "files": {}
   },
   "installed_plugins": {
-    "cordova-plugin-whitelist": {
-      "PACKAGE_NAME": "io.cordova.hellocordova"
-    },
     "cordova-plugin-file": {
       "PACKAGE_NAME": "de.cirspecte"
     },
     "cordova-plugin-geolocation": {
+      "PACKAGE_NAME": "de.cirspecte"
+    },
+    "cordova-plugin-whitelist": {
+      "PACKAGE_NAME": "de.cirspecte"
+    },
+    "com.ourcodeworld.plugins.Filebrowser": {
       "PACKAGE_NAME": "de.cirspecte"
     }
   },

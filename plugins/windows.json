@@ -7,13 +7,16 @@
     "files": {}
   },
   "installed_plugins": {
-    "cordova-plugin-whitelist": {
-      "PACKAGE_NAME": "HelloCordova"
-    },
     "cordova-plugin-file": {
-      "PACKAGE_NAME": "HelloCordova"
+      "PACKAGE_NAME": "Cirspecte"
     },
     "cordova-plugin-geolocation": {
+      "PACKAGE_NAME": "Cirspecte"
+    },
+    "cordova-plugin-whitelist": {
+      "PACKAGE_NAME": "Cirspecte"
+    },
+    "com.ourcodeworld.plugins.Filebrowser": {
       "PACKAGE_NAME": "Cirspecte"
     }
   },
