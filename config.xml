@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="de.cirspecte" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="de.cirspecte.test" version="0.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>Cirspecte</name>
     <description>
         Cirspecte - An editing software for panorama tours through time
@@ -7,7 +7,7 @@
     <author email="hoellerich.nico@freenet.de" href="https://github.com/NiHoel/cirspecte">
         Nico Höllerich
     </author>
-    <content src="edit.html" />
+    <content src="mobile.html" />
     <preference name="fullscreen" value="true" />
     <access origin="*" />
     <allow-intent href="http://*/*" />
