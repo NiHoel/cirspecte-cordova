@@ -43,7 +43,7 @@ function createWindow () {
 
     // and load the index.html of the app.
     // TODO: possibly get this data from config.xml
-    mainWindow.loadURL(`file://${__dirname}/index.html`);
+    mainWindow.loadURL(`file://${__dirname}/mobile.html`);
     mainWindow.webContents.on('did-finish-load', function () {
         mainWindow.webContents.send('window-id', mainWindow.id);
     });
@@ -87,8 +87,7 @@ app.on('activate', () => {
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
 ipcMain.on('fs-request', async (event, options) => {
-	console.log("request received: ", options);
-	        var properties = [];
+     var properties = [];
         if (options.multi)
             properties.push("multiSelection");
         if (options.filter.folders)
@@ -96,7 +95,16 @@ ipcMain.on('fs-request', async (event, options) => {
         if (options.filter.files)
             properties.push("openFile");
 	const paths = await dialog.showOpenDialog(mainWindow, {
+	defaultPath: options.parent,
     properties: properties
+  });
+
+  mainWindow.webContents.send("fs-response", paths);
+});
+
+ipcMain.on('fs-create', async (event, options) => {
+	const paths = await dialog.showOpenDialog(mainWindow, {
+    properties: ['openFile','createDirectory','promptToCreate']
   });
 
   mainWindow.webContents.send("fs-response", paths);
