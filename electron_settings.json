@@ -1,7 +1,6 @@
 {
     "browserWindow": {
-        "width": 2400,
-        "height": 1000,
+        "maximize": true,
 		"webPreferences": {
             "nodeIntegration": true,
 			"preload": "preload.js"

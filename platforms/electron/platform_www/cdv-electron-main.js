@@ -40,6 +40,8 @@ function createWindow () {
 
     const browserWindowOpts = Object.assign({}, cdvElectronSettings.browserWindow, { icon: appIcon });
     mainWindow = new BrowserWindow(browserWindowOpts);
+	if(browserWindowOpts.maximize)
+		mainWindow.maximize();
 
     // and load the index.html of the app.
     // TODO: possibly get this data from config.xml
