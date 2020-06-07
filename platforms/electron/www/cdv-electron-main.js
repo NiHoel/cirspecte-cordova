@@ -39,6 +39,12 @@ function createWindow () {
     }
 
     const browserWindowOpts = Object.assign({}, cdvElectronSettings.browserWindow, { icon: appIcon });
+	
+	if(browserWindowOpts.maximize){
+		browserWindowOpts.fullscreen = 4096;
+		browserWindowOpts.height = 4096;
+	}
+		
     mainWindow = new BrowserWindow(browserWindowOpts);
 	if(browserWindowOpts.maximize)
 		mainWindow.maximize();
