@@ -11,11 +11,13 @@
    * `cordova plugin add cordova-plugin-whitelist`
    * `cordova plugin add cordova-plugin-geolocation`
    * `cordova plugin add https://github.com/ourcodeworld/cordova-ourcodeworld-filebrowser.git` 
-4. Check requirements and install if not available: `cordova requirements` (see https://cordova.apache.org/docs/en/latest/guide/platforms/android/index.html)
+4. Ensure that the cordova-file-plugin is installed that works with electron: `cordova plugin add https://github.com/zorn-v/cordova-plugin-file.git#electron`
+    Remove the entry `"cordova-plugin-file": "github:zorn-v/cordova-plugin-file#electron",` in package.json afterwards. If the entry is in package.json, cordova does not recognize the path specification and will not add the file plugin.
+5. Check requirements and install if not available: `cordova requirements` (see https://cordova.apache.org/docs/en/latest/guide/platforms/android/index.html)
    * Install Android Studio
    * Download Gradle seperatly and add to path
    * Add to path environment variable: %LOCALAPPDATA%/Android/Sdk/platform-tools;%LOCALAPPDATA%/Android\Sdk\build-tools\29.0.3
    * Add environment varialbe JAVA_HOME=C:\Program Files\Android\Android Studio\jre
-5. Build app: `cordova build android`
+6. Build app: `cordova build android`
   * To build electron, in package.json remove     `"cordova-ourcodeworld-filebrowser": "git+https://github.com/ourcodeworld/cordova-ourcodeworld-filebrowser.git",` and `"com.ourcodeworld.plugins.Filebrowser": {}`
-6. Run emulator: `cordova emulate android`
+7. Run emulator: `cordova emulate android`

@@ -18,72 +18,43 @@
 */
 
 const fs = require('fs');
+const path = require('path');
+const { cordova } = require('./package.json');
 // Module to control application life, browser window and tray.
-const { app, BrowserWindow, dialog, ipcMain } = require('electron');
+const {
+    app,
+    BrowserWindow,
+    protocol,
+    ipcMain
+} = require('electron');
 // Electron settings from .json file.
 const cdvElectronSettings = require('./cdv-electron-settings.json');
+const reservedScheme = require('./cdv-reserved-scheme.json');
 
+const devTools = cdvElectronSettings.browserWindow.webPreferences.devTools
+    ? require('electron-devtools-installer')
+    : false;
 
-if (handleSquirrelEvent()) {
-  // squirrel event handled and app will exit in 1000ms, so don't do anything else
-  return;
+const scheme = cdvElectronSettings.scheme;
+const hostname = cdvElectronSettings.hostname;
+const isFileProtocol = scheme === 'file';
+
+/**
+ * The base url path.
+ * E.g:
+ * When scheme is defined as "file" the base path is "file://path-to-the-app-root-directory"
+ * When scheme is anything except "file", for example "app", the base path will be "app://localhost"
+ *  The hostname "localhost" can be changed but only set when scheme is not "file"
+ */
+const basePath = (() => isFileProtocol ? `file://${__dirname}` : `${scheme}://${hostname}`)();
+
+if (reservedScheme.includes(scheme)) throw new Error(`The scheme "${scheme}" can not be registered. Please use a non-reserved scheme.`);
+
+if (!isFileProtocol) {
+    protocol.registerSchemesAsPrivileged([
+        { scheme, privileges: { standard: true, secure: true } }
+    ]);
 }
-
-function handleSquirrelEvent() {
-  if (process.argv.length === 1) {
-    return false;
-  }
-
-  const ChildProcess = require('child_process');
-  const path = require('path');
-
-  const appFolder = path.resolve(process.execPath, '..');
-  const rootAtomFolder = path.resolve(appFolder, '..');
-  const updateDotExe = path.resolve(path.join(rootAtomFolder, 'Update.exe'));
-  const exeName = path.basename(process.execPath);
-
-  const spawn = function(command, args) {
-    let spawnedProcess, error;
-
-    try {
-      spawnedProcess = ChildProcess.spawn(command, args, {detached: true});
-    } catch (error) {}
-
-    return spawnedProcess;
-  };
-
-  const spawnUpdate = function(args) {
-    return spawn(updateDotExe, args);
-  };
-
-  const squirrelEvent = process.argv[1];
-  switch (squirrelEvent) {
-    case '--squirrel-install':
-    case '--squirrel-updated':
-
-      // Install desktop and start menu shortcuts
-      spawnUpdate(['--createShortcut', exeName]);
-
-      setTimeout(app.quit, 1000);
-      return true;
-
-    case '--squirrel-uninstall':
-
-      // Remove desktop and start menu shortcuts
-      spawnUpdate(['--removeShortcut', exeName]);
-
-      setTimeout(app.quit, 1000);
-      return true;
-
-    case '--squirrel-obsolete':
-      // This is called on the outgoing version of your app before
-      // we update to the new version - it's the opposite of
-      // --squirrel-updated
-
-      app.quit();
-      return true;
-  }
-};
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -101,7 +72,10 @@ function createWindow () {
     }
 
     const browserWindowOpts = Object.assign({}, cdvElectronSettings.browserWindow, { icon: appIcon });
-	
+    browserWindowOpts.webPreferences.preload = path.join(app.getAppPath(), 'cdv-electron-preload.js');
+    browserWindowOpts.webPreferences.nodeIntegration = false;
+    browserWindowOpts.webPreferences.contextIsolation = true;
+
 	if(browserWindowOpts.maximize){
 		browserWindowOpts.width = 4096;
 		browserWindowOpts.height = 4096;
@@ -111,12 +85,12 @@ function createWindow () {
 	if(browserWindowOpts.maximize)
 		mainWindow.maximize();
 
-    // and load the index.html of the app.
-    // TODO: possibly get this data from config.xml
-    mainWindow.loadURL(`file://${__dirname}/edit.html`);
-    mainWindow.webContents.on('did-finish-load', function () {
-        mainWindow.webContents.send('window-id', mainWindow.id);
-    });
+    // Load a local HTML file or a remote URL.
+    const cdvUrl = cdvElectronSettings.browserWindowInstance.loadURL.url;
+    const loadUrl = cdvUrl.includes('://') ? cdvUrl : `${basePath}/${cdvUrl}`;
+    const loadUrlOpts = Object.assign({}, cdvElectronSettings.browserWindowInstance.loadURL.options);
+
+    mainWindow.loadURL(loadUrl, loadUrlOpts);
 
     // Open the DevTools.
     if (cdvElectronSettings.browserWindow.webPreferences.devTools) {
@@ -132,10 +106,32 @@ function createWindow () {
     });
 }
 
+function configureProtocol () {
+    protocol.registerFileProtocol(scheme, (request, cb) => {
+        const url = request.url.substr(basePath.length + 1);
+        cb({ path: path.normalize(`${__dirname}/${url}`) });
+    });
+
+    protocol.interceptFileProtocol('file', (_, cb) => { cb(null); });
+}
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', createWindow);
+app.on('ready', () => {
+    if (!isFileProtocol) {
+        configureProtocol();
+    }
+
+    if (devTools && cdvElectronSettings.devToolsExtension) {
+        const extensions = cdvElectronSettings.devToolsExtension.map(id => devTools[id] || id);
+        devTools.default(extensions) // default = install extension
+            .then((name) => console.log(`Added Extension:  ${name}`))
+            .catch((err) => console.log('An error occurred: ', err));
+    }
+
+    createWindow();
+});
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
@@ -150,12 +146,39 @@ app.on('activate', () => {
     // On OS X it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
     if (mainWindow === null) {
+        if (!isFileProtocol) {
+            configureProtocol();
+        }
+
         createWindow();
+    }
+});
+
+ipcMain.handle('cdv-plugin-exec', async (_, serviceName, action, ...args) => {
+    if (cordova && cordova.services && cordova.services[serviceName]) {
+        const plugin = require(cordova.services[serviceName]);
+
+        return plugin[action]
+            ? plugin[action](args)
+            : Promise.reject(new Error(`The action "${action}" for the requested plugin service "${serviceName}" does not exist.`));
+    } else {
+        return Promise.reject(new Error(`The requested plugin service "${serviceName}" does not exist have native support.`));
     }
 });
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
+
+ipcMain.handle('cdv-plugin-file-paths-prefix', async () => {
+    return Promise.resolve({
+            applicationDirectory: path.dirname(app.getAppPath()) + path.sep,
+            dataDirectory: app.getPath('userData') + path.sep,
+            cacheDirectory: app.getPath('cache') + path.sep,
+            tempDirectory: app.getPath('temp') + path.sep,
+            documentsDirectory: app.getPath('documents') + path.sep
+        });
+});
+
 ipcMain.on('fs-request', async (event, options) => {
      var properties = [];
         if (options.multi)
