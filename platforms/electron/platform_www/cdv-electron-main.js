@@ -25,7 +25,8 @@ const {
     app,
     BrowserWindow,
     protocol,
-    ipcMain
+    ipcMain,
+    dialog
 } = require('electron');
 // Electron settings from .json file.
 const cdvElectronSettings = require('./cdv-electron-settings.json');
@@ -75,12 +76,12 @@ function createWindow () {
     browserWindowOpts.webPreferences.preload = path.join(app.getAppPath(), 'cdv-electron-preload.js');
     browserWindowOpts.webPreferences.nodeIntegration = false;
     browserWindowOpts.webPreferences.contextIsolation = true;
-
-	if(browserWindowOpts.maximize){
+    
+    if(browserWindowOpts.maximize){
 		browserWindowOpts.width = 4096;
 		browserWindowOpts.height = 4096;
 	}
-		
+
     mainWindow = new BrowserWindow(browserWindowOpts);
 	if(browserWindowOpts.maximize)
 		mainWindow.maximize();

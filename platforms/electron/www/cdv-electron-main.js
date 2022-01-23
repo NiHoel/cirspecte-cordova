@@ -25,7 +25,8 @@ const {
     app,
     BrowserWindow,
     protocol,
-    ipcMain
+    ipcMain,
+    dialog
 } = require('electron');
 // Electron settings from .json file.
 const cdvElectronSettings = require('./cdv-electron-settings.json');
@@ -73,12 +74,14 @@ function createWindow () {
 
     const browserWindowOpts = Object.assign({}, cdvElectronSettings.browserWindow, { icon: appIcon });
     browserWindowOpts.webPreferences.preload = path.join(app.getAppPath(), 'cdv-electron-preload.js');
-
-	if(browserWindowOpts.maximize){
+    browserWindowOpts.webPreferences.nodeIntegration = false;
+    browserWindowOpts.webPreferences.contextIsolation = true;
+    
+    if(browserWindowOpts.maximize){
 		browserWindowOpts.width = 4096;
 		browserWindowOpts.height = 4096;
 	}
-		
+
     mainWindow = new BrowserWindow(browserWindowOpts);
 	if(browserWindowOpts.maximize)
 		mainWindow.maximize();
@@ -166,6 +169,17 @@ ipcMain.handle('cdv-plugin-exec', async (_, serviceName, action, ...args) => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
+
+ipcMain.handle('cdv-plugin-file-paths-prefix', async () => {
+    return Promise.resolve({
+            applicationDirectory: path.dirname(app.getAppPath()) + path.sep,
+            dataDirectory: app.getPath('userData') + path.sep,
+            cacheDirectory: app.getPath('cache') + path.sep,
+            tempDirectory: app.getPath('temp') + path.sep,
+            documentsDirectory: app.getPath('documents') + path.sep
+        });
+});
+
 ipcMain.on('fs-request', async (event, options) => {
      var properties = [];
         if (options.multi)
