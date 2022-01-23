@@ -1,13 +1,13 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="de.cirspecte.viewer" version="0.6.0" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <name>Cirspecte Viewer</name>
+<widget id="de.cirspecte.editor" version="0.8.1" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>Cirspecte Editor</name>
     <description>
         Cirspecte - An editing software for panorama tours through time
     </description>
     <author email="hoellerich.nico@freenet.de" href="https://github.com/NiHoel/cirspecte">
         Nico Höllerich
     </author>
-    <content src="index.html" />
+    <content src="edit.html" />
     <preference name="fullscreen" value="true" />
     <access origin="*" />
     <allow-intent href="http://*/*" />
@@ -18,6 +18,7 @@
         <preference name="android-minSdkVersion" value="22" />
         <preference name="android-targetSdkVersion" value="23" />
         <plugin name="com.ourcodeworld.plugins.Filebrowser" spec="~1.0.0" />
+        <plugin name="cordova-plugin-file" spec="~6.0.3-dev" />
     </platform>
     <platform name="ios">
         <allow-intent href="itms:*" />
@@ -25,10 +26,12 @@
     </platform>
     <platform name="electron">
         <preference name="ElectronSettingsFilePath" value="electron_settings.json" />
+		<preference name="ShowSplashScreen" value="false" />
+        <plugin name="cordova-plugin-file" spec="~6.0.3-dev" />
     </platform>
     <plugin name="cordova-plugin-whitelist" spec="^1.3.4" />
     <plugin name="cordova-plugin-geolocation" spec="~4.0.2" />
-    <plugin name="cordova-plugin-file" spec="~6.0.3-dev" />
+    
 	
 	<platform name="android">
         <icon src="res/android/xhdpi.png" density="xhdpi" />
