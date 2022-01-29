@@ -69,7 +69,7 @@ cordova.define('cordova-plugin-file.FileProxy', function (require, exports, modu
             const options = args[2] || {};
 
             fs.stat(path, (err, stats) => {
-                if (err && err.code !== 'ENOENT' && (!err.message || !err.message.startsWith('ENOENT'))) {
+                if (err && err.code !== 'ENOENT' && (!err.message || !err.message.includes('ENOENT'))) {
                     if (errorCallback) {
                         errorCallback(FileError.INVALID_STATE_ERR);
                     }
@@ -266,7 +266,7 @@ cordova.define('cordova-plugin-file.FileProxy', function (require, exports, modu
             const options = args[2] || {};
 
             fs.stat(path, (err, stats) => {
-                if (err && err.code !== 'ENOENT' && (!err.message || !err.message.startsWith('ENOENT'))) {
+                if (err && err.code !== 'ENOENT' && (!err.message || !err.message.includes('ENOENT'))) {
                     if (errorCallback) {
                         errorCallback(FileError.INVALID_STATE_ERR);
                     }
