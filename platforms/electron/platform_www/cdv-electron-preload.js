@@ -68,13 +68,12 @@ ipcRenderer.invoke('cdv-plugin-file-paths-prefix').then(pathsPrefix => {
                 }
             },
             on: (channel, func) => {
-                let validChannels = ["fs-response"];
+                let validChannels = ["fs-response", "main-proc-error"];
                 if (validChannels.includes(channel)) {
                     ipcRenderer.on(channel, func);
                 }
             },
             off: (channel, func) => {
-                let validChannels = ["fs-response"];
                 ipcRenderer.off(channel, func);
             }
         },

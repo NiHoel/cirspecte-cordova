@@ -61,7 +61,7 @@ if (!isFileProtocol) {
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
 
-function createWindow () {
+function createWindow() {
     // Create the browser window.
     let appIcon;
     if (fs.existsSync(`${__dirname}/img/app.png`)) {
@@ -76,15 +76,15 @@ function createWindow () {
     browserWindowOpts.webPreferences.preload = path.join(app.getAppPath(), 'cdv-electron-preload.js');
     browserWindowOpts.webPreferences.nodeIntegration = false;
     browserWindowOpts.webPreferences.contextIsolation = true;
-    
-    if(browserWindowOpts.maximize){
-		browserWindowOpts.width = 4096;
-		browserWindowOpts.height = 4096;
-	}
+
+    if (browserWindowOpts.maximize) {
+        browserWindowOpts.width = 4096;
+        browserWindowOpts.height = 4096;
+    }
 
     mainWindow = new BrowserWindow(browserWindowOpts);
-	if(browserWindowOpts.maximize)
-		mainWindow.maximize();
+    if (browserWindowOpts.maximize)
+        mainWindow.maximize();
 
     // Load a local HTML file or a remote URL.
     const cdvUrl = cdvElectronSettings.browserWindowInstance.loadURL.url;
@@ -100,14 +100,14 @@ function createWindow () {
 
     // Emitted when the window is closed.
     mainWindow.on('closed', () => {
-    // Dereference the window object, usually you would store windows
-    // in an array if your app supports multi windows, this is the time
-    // when you should delete the corresponding element.
+        // Dereference the window object, usually you would store windows
+        // in an array if your app supports multi windows, this is the time
+        // when you should delete the corresponding element.
         mainWindow = null;
     });
 }
 
-function configureProtocol () {
+function configureProtocol() {
     protocol.registerFileProtocol(scheme, (request, cb) => {
         const url = request.url.substr(basePath.length + 1);
         cb({ path: path.normalize(`${__dirname}/${url}`) });
@@ -170,36 +170,59 @@ ipcMain.handle('cdv-plugin-exec', async (_, serviceName, action, ...args) => {
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
 
+
 ipcMain.handle('cdv-plugin-file-paths-prefix', async () => {
-    return Promise.resolve({
+    try {
+        return Promise.resolve({
             applicationDirectory: path.dirname(app.getAppPath()) + path.sep,
             dataDirectory: app.getPath('userData') + path.sep,
             cacheDirectory: app.getPath('cache') + path.sep,
             tempDirectory: app.getPath('temp') + path.sep,
             documentsDirectory: app.getPath('documents') + path.sep
         });
+    }
+    catch (e) {
+        mainWindow.webContents.send("main-proc-error", e);
+    }
 });
 
 ipcMain.on('fs-request', async (event, options) => {
-     var properties = [];
+    try {
+        console.log('fs-request', options)
+        var properties = [];
         if (options.multi)
             properties.push("multiSelection");
         if (options.filter.folders)
             properties.push("openDirectory");
         if (options.filter.files)
             properties.push("openFile");
-	const paths = await dialog.showOpenDialog(mainWindow, {
-	defaultPath: options.parent,
-    properties: properties
-  });
 
-  mainWindow.webContents.send("fs-response", paths);
+        console.log("show dialog");
+        console.log("defaultPath", options.parent)
+
+        var opt = { properties: properties }
+        if (options.parent)
+            opt.defaultPath = options.parent;
+
+        const paths = await dialog.showOpenDialog(mainWindow, opt);
+
+        console.log("return paths", paths);
+        mainWindow.webContents.send("fs-response", paths);
+    }
+    catch (e) {
+        mainWindow.webContents.send("main-proc-error", e);
+    }
 });
 
 ipcMain.on('fs-create', async (event, options) => {
-	const paths = await dialog.showOpenDialog(mainWindow, {
-    properties: ['openFile','createDirectory','promptToCreate']
-  });
+    try {
+        const paths = await dialog.showOpenDialog(mainWindow, {
+            properties: ['openFile', 'createDirectory', 'promptToCreate']
+        });
 
-  mainWindow.webContents.send("fs-response", paths);
+        mainWindow.webContents.send("fs-response", paths);
+    }
+    catch (e) {
+        mainWindow.webContents.send("main-proc-error", e);
+    }
 });

@@ -21,3 +21,13 @@
 6. Build app: `cordova build android`
   * To build electron, in package.json remove     `"cordova-ourcodeworld-filebrowser": "git+https://github.com/ourcodeworld/cordova-ourcodeworld-filebrowser.git",` and `"com.ourcodeworld.plugins.Filebrowser": {}`
 7. Run emulator: `cordova emulate android`
+
+# Troubleshooting
+* cordova requirements fails with android target not found because avdmanager list target throws an exception: 
+ * Cause: There is an old on under %ANDROID_HOME%/tools
+ * Solution: Download the latest comdline-tools in android studio, delete the old tools folder and execute: mklink /J %ANDROID_HOME%\tools %ANDROID_HOME%\cmdline-tools\latest
+* Building android does not start but gives message: No Java files found that extend CordovaActivity.
+ * Solution: Re-add platform and remove whitelist plugin:
+  * cordova platform rm android
+  * cordova platform add android
+  * cordova plugin rm whitelist
