@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="de.cirspecte.editor" version="0.9.0" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="de.cirspecte.editor" version="0.9.6" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>Cirspecte Editor</name>
     <description>
         Cirspecte - An editing software for panorama tours through time
@@ -20,6 +20,7 @@
         <plugin name="com.ourcodeworld.plugins.Filebrowser" spec="~1.0.0" />
         <plugin name="cordova-plugin-file" spec="~6.0.3-dev" />
 		<access origin="cdvfile://*" />
+		<hook type="after_platform_add" src="scripts/plugin_rm_whitelist.bat" />
     </platform>
     <platform name="ios">
         <allow-intent href="itms:*" />

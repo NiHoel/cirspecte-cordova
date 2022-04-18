@@ -31,3 +31,6 @@
   * cordova platform rm android
   * cordova platform add android
   * cordova plugin rm whitelist
+* Local files cannot be loaded when starting platform browser
+ * Cause: Cordova file plugin defines class File. This prevents filesystem.js from properly checking whether its a built-in file
+ * Solution: Since cordova is not needed in the browser, delete platforms/browser/cordova.js and reload the page (must be repeated whenever the server is restarted)
